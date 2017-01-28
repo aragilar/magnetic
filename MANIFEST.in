@@ -1,0 +1,10 @@
+include versioneer.py
+include magnetic/_version.py
+
+recursive-include docs *
+recursive-exclude docs/_build *
+recursive-include tests *.py
+include doc-requirements.txt
+include test-requirements.txt
+include pylintrc
+include tox.ini

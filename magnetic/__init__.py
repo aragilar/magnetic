@@ -9,8 +9,6 @@ A bunch of tools for using venvs (and virtualenvs) from python.
 :license: MIT, see LICENSE for more details.
 """
 
-__version__ = "0.1"
-
 from .utils import (
     MagneticError, NO_OS_SUPPORT_MSG, UNKNOWN_METHOD_MSG, create_and_bind
 )
@@ -20,6 +18,9 @@ from ._internals.inetd import inetd_sockets
 from ._internals.launchd import launchd_sockets
 from ._internals.upstart import upstart_sockets
 
+from ._version import get_versions
+__version__ = get_versions()['version']
+del get_versions
 
 
 def get_socket(
