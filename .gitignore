@@ -6,3 +6,6 @@ dist
 build
 docs/_build
 __pycache__
+.cache/
+.coverage
+.eggs/
