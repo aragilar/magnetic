@@ -1,23 +1,26 @@
 language: python
 
 sudo: false
+dist: trusty
 
 cache:
   directories:
     - $HOME/.cache/pip
 
 env:
-  - TOXENV=py27
-  - TOXENV=py34
-  #- TOXENV=py35
-  #- TOXENV=py36
   - TOXENV=flake8
   - TOXENV=pylint
   - TOXENV=docs
   - TOXENV=check-manifest
-  #- TOXENV=checkreadme
+  - TOXENV=checkreadme
 matrix:
   include:
+    - python: 2.7
+      env:
+      - TOXENV=py27
+    - python: 3.4
+      env:
+      - TOXENV=py34
     - python: 3.5
       env:
       - TOXENV=py35
