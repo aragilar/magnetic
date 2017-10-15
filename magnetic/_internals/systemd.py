@@ -22,8 +22,8 @@ def _systemd_sockets_pure_fix(max_socks):
         for i in range(sd_available_socks):
             sock_list.append(fromfd(i + SD_LISTEN_FDS_START))
         if not sock_list:
-            raise MarneticError(NO_SYSTEMD_SOCKETS_MSG)
+            raise MagneticError(NO_SYSTEMD_SOCKETS_MSG)
         return sock_list
-    raise MarneticError(NO_SYSTEMD_SOCKETS_MSG)
+    raise MagneticError(NO_SYSTEMD_SOCKETS_MSG)
 
 systemd_sockets = _systemd_sockets_pure_fix

@@ -12,11 +12,9 @@ A bunch of tools for using venvs (and virtualenvs) from python.
 from .utils import (
     MagneticError, NO_OS_SUPPORT_MSG, UNKNOWN_METHOD_MSG, create_and_bind
 )
-from ._internals import fromfd
 from ._internals.systemd import systemd_sockets
 from ._internals.inetd import inetd_sockets
 from ._internals.launchd import launchd_sockets
-from ._internals.upstart import upstart_sockets
 
 from ._version import get_versions
 __version__ = get_versions()['version']
@@ -146,6 +144,4 @@ def mag_sockets(method, max_socks=None):
         return inetd_sockets(max_socks)
     elif method == "launchd":
         return launchd_sockets(max_socks)
-    elif method == "upstart":
-        return upstart_sockets(max_socks)
     raise MagneticError(UNKNOWN_METHOD_MSG.format(method))
