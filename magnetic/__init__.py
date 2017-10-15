@@ -9,12 +9,14 @@ A bunch of tools for using venvs (and virtualenvs) from python.
 :license: MIT, see LICENSE for more details.
 """
 
-from .utils import (
-    MagneticError, NO_OS_SUPPORT_MSG, UNKNOWN_METHOD_MSG, create_and_bind
+from ._utils import (
+    MagneticError, NO_OS_SUPPORT_MSG, UNKNOWN_METHOD_MSG,
+    create_and_bind as _create_and_bind, HAS_SOCKET_ACTIVATION,
 )
-from ._internals.systemd import systemd_sockets
-from ._internals.inetd import inetd_sockets
-from ._internals.launchd import launchd_sockets
+from ._internals.systemd import systemd_sockets as _systemd_sockets
+from ._internals.inetd import inetd_sockets as _inetd_sockets
+from ._internals.launchd import launchd_sockets as _launchd_sockets
+from ._internals import fromfd
 
 from ._version import get_versions
 __version__ = get_versions()['version']
@@ -31,8 +33,7 @@ def get_socket(
     having been called by the parent process (or equivalent depending on
     system). In the case that acquiring the socket fails,
     `magnetic.MagneticError` is raised. If `force_create` is `True`, try to
-    create a socket with `family`, `type` and `proto`. This new socket is not
-    bound.
+    create a socket with `family`, `type` and `proto`.
 
     .. note::
         This function enforces that a single socket be returned, multiple
@@ -73,9 +74,9 @@ def get_socket(
     )[0]
 
 
-def get_bound_sockets(
-    method, families=None, types=None, protos=None, addrs=None, force_create=False,
-    max_socks=None
+def get_sockets(
+    method, families=None, types=None, protos=None, addrs=None,
+    force_create=False, max_socks=None
 ):
     """
     Utility function to get socket-activation sockets.
@@ -84,8 +85,7 @@ def get_bound_sockets(
     having been called by the parent process (or equivalent depending on
     system). In the case that acquiring the sockets fail,
     `magnetic.MagneticError` is raised. If `force_create` is `True`, try to
-    create sockets with `families`, `types` and `protos`. These new sockets are
-    not bound.
+    create sockets with `families`, `types` and `protos`.
 
     .. warning::
         There should only be a single call to `get_socket` or `get_sockets`.
@@ -93,7 +93,7 @@ def get_bound_sockets(
 
     :param method: The system used to perform socket activation. `None`
         specifies that a new socket be created. Supported values are 'systemd',
-        'inetd', 'launchd', 'upstart' and `None`.
+        'inetd', 'launchd', and `None`.
     :type method: str or None
 
     :param families: List of families to use if new sockets are created. Each
@@ -125,23 +125,40 @@ def get_bound_sockets(
 
     """
     if method is None:
-        return create_and_bind(families, types, protos, addrs, max_socks)
+        return _create_and_bind(families, types, protos, addrs, max_socks)
     try:
         if not HAS_SOCKET_ACTIVATION:
             raise MagneticError(NO_OS_SUPPORT_MSG)
-        return max_socks(method, max_socks)
+        return get_activated_sockets(method, max_socks)
     except MagneticError:
         if force_create:
-            return create_and_bind(families, types, protos, addrs, max_socks)
+            return _create_and_bind(families, types, protos, addrs, max_socks)
         raise
 
 
+def get_activated_sockets(method, max_socks=None):
+    """
+    Returns `max_socks` number of sockets passed to python via `method`.
 
-def mag_sockets(method, max_socks=None):
+    :param method: The system used to perform socket activation. `None`
+        specifies that a new socket be created. Supported values are 'systemd',
+        'inetd', 'launchd', and `None`.
+    :type method: str or None
+
+    :param max_socks: Maximum number of sockets that should be acquired. If the
+        number of sockets that can be acquired exceeds this, raise
+        `magnetic.MagneticError`. `None` disables this check.
+    :type max_socks: int or None
+
+    :return: The acquired sockets.
+    :rtype: list of `socket.socket` or equivalent
+
+    :raises magnetic.MagneticError: if socket acquisition fails.
+    """
     if method == "systemd":
-        return systemd_sockets(max_socks)
+        return _systemd_sockets(max_socks)
     elif method == "inetd":
-        return inetd_sockets(max_socks)
+        return _inetd_sockets(max_socks)
     elif method == "launchd":
-        return launchd_sockets(max_socks)
+        return _launchd_sockets(max_socks)
     raise MagneticError(UNKNOWN_METHOD_MSG.format(method))

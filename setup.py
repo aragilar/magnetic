@@ -16,7 +16,7 @@ def need_backport(major, minor):
 
 PY34_BACKPORT = need_backport(3,4)
 
-run_requires = ["cffi>=1.0.0"]
+run_requires = ["cffi>=1.0.0", "six"]
 
 if PY34_BACKPORT:
     run_requires.append("enum34")

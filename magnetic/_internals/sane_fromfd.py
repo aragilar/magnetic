@@ -52,4 +52,4 @@ def get_proto(fd):
     flag = lib.magnetic_get_sock_proto(fd, proto)
     if flag == -1:
         raise sock_fd_errno_exception(ffi.errno, fd)
-    return IPProtocol(proto[0])
+    return proto[0]

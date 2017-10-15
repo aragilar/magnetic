@@ -1,7 +1,7 @@
 
 from os import environ, getpid
 
-from ..utils import (
+from .._utils import (
     MagneticError, TOO_MANY_SOCKETS_MSG,
 )
 from . import fromfd
