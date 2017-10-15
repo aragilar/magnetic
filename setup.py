@@ -2,9 +2,9 @@ import setuptools
 
 import versioneer
 
-#import codecs
-#with codecs.open('DESCRIPTION.rst', 'r', 'utf-8') as f:
-#    long_description = f.read()
+import codecs
+with codecs.open('DESCRIPTION.rst', 'r', 'utf-8') as f:
+    long_description = f.read()
 
 def need_backport(major, minor):
     import sys
@@ -31,7 +31,7 @@ setuptools.setup(
     author = "James Tocknell",
     author_email = "aragilar@gmail.com",
     description = "Socket activation for python",
-#    long_description = long_description,
+    long_description = long_description,
     url = "http://magnetic.rtfd.org",
     classifiers=[
         'Development Status :: 3 - Alpha',

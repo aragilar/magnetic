@@ -8,3 +8,5 @@ include doc-requirements.txt
 include test-requirements.txt
 include pylintrc
 include tox.ini
+include DESCRIPTION.rst
+include README.md
